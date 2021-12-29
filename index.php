@@ -1,18 +1,12 @@
 <?php
+require 'classes/Article.php';
+require 'classes/Database.php';
 
-try {
-    $conn = Database::getConnection();
-    
-    $sql = "SELECT *
-            FROM articles";
-    $statement = $db->query($sql);
-    $articles = $statement->fetchAll(PDO::FETCH_ASSOC);
+$conn = Database::getConnection();
+$articles = Article::getAllArticles($conn);
 
-} catch (PDOException $e) {
-    echo $e->getMessage();
-    exit;
-}
 ?>
+<h1>TEST 1</h1>
 
 <?php require 'includes/header.php'; ?>
 <a href="new_article.php">New article</a>

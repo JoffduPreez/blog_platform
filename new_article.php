@@ -1,4 +1,6 @@
 <?php
+require 'classes/Article.php';
+require 'classes/Database.php';
 require 'includes/redirect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -6,33 +8,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $content = $_POST['content'];
     $published_at = $_POST['published_at'];
 
-    try {
-        $conn = Database::getConnection();
-
-        $sql = "INSERT INTO articles (title, content, published_at) VALUES (:title, :content, :published_at)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':title', $title, PDO::PARAM_STR);
-        $stmt->bindValue(':content', $content, PDO::PARAM_STR);
-        if ($published_at == '') {
-            $stmt->bindValue(':published_at', null, PDO::PARAM_NULL);
-        } else {
-            $stmt->bindValue(':published_at', $published_at, PDO::PARAM_STR);
-        }
-
-        if ($stmt->execute()) {
-            $id = $conn->lastInsertId();
-            redirect("/");
-        }
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-        exit;
-    }
+    $conn = Database::getConnection();
+    Article::newArticle($conn, $title, $content, $published_at);
 }
 ?>
 
 
 <?php require 'includes/header.php'; ?>
 <form method="post">
+    <h1>TEST 1</h1>
     <div>
         <label for="title">Title</label>
         <input name="title" id="title" placeholder="Article title" value="<?= htmlspecialchars($title); ?>">
