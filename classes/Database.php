@@ -12,7 +12,7 @@ class Database
      *
      * @return PDO object Connection to the database server
      */
-    public function getConnection()
+    public static function getConnection()
     {
         $db_host = "localhost";
         $db_name = "cms";

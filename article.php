@@ -1,17 +1,7 @@
 <?php
 
-$db_host = "localhost";
-$db_name = "blog_platform";
-$db_user = "joffre";
-$db_pass = "joffre$$";
-$title = $_POST['title'];
-$content = $_POST['content'];
-$published_at = $_POST['published_at'];
-$dsn = 'mysql:host=' . $db_host . ';dbname=' . $db_name . ';charset=utf8';
-
 try {
-    $conn = new PDO($dsn, $db_user, $db_pass);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn = Database::getConnection();
 
     $sql = "SELECT *
             FROM articles

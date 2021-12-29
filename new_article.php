@@ -1,52 +1,13 @@
 <?php
 require 'includes/redirect.php';
 
-// if ($_SERVER["REQUEST_METHOD"] == "POST") {
-//     $db_host = "localhost";
-//     $db_name = "blog_platform";
-//     $db_user = "joffre";
-//     $db_pass = "joffre$$";
-//     $title = $_POST['title'];
-//     $content = $_POST['content'];
-//     $published_at = $_POST['published_at'];
-    
-//     $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
-//     if ($conn->connect_error) {
-//       die("Connection failed: " . mysqli_connect_error());
-//     }
-    
-//     $sql = "INSERT INTO articles (title, content, published_at) VALUES (?, ?, ?)";
-//     $stmt = $conn->prepare($sql);
-
-//     if ($stmt === false) {
-//         echo mysqli_error($conn);
-//     } else {
-//         if ($published_at == '') {
-//             $published_at = null;
-//         }
-//         $stmt->bind_param("sss", $title, $content, $published_at);
-
-//         if ($stmt->execute()) {
-//             redirect("/");
-//         } else {
-//             echo mysqli_stmt_error($stmt);
-//         }
-//     }
-// }
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $db_host = "localhost";
-    $db_name = "blog_platform";
-    $db_user = "joffre";
-    $db_pass = "joffre$$";
     $title = $_POST['title'];
     $content = $_POST['content'];
     $published_at = $_POST['published_at'];
-    $dsn = 'mysql:host=' . $db_host . ';dbname=' . $db_name . ';charset=utf8';
 
     try {
-        $conn = new PDO($dsn, $db_user, $db_pass);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $conn = Database::getConnection();
 
         $sql = "INSERT INTO articles (title, content, published_at) VALUES (:title, :content, :published_at)";
         $stmt = $conn->prepare($sql);
