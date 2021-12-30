@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = Database::getConnection();
 
     if (User::authenticate($conn, $_POST['username'], $_POST['password'])) {
-        User::login();
+        User::login($conn, $_POST['username']);
         redirect('/article_list.php');
     } else {
         array_push($errors, 'login incorrect');

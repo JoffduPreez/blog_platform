@@ -2,10 +2,13 @@
 require 'classes/Article.php';
 require 'classes/Database.php';
 
+session_start();
+
 $conn = Database::getConnection();
-$articles = Article::getAllArticles($conn);
+$articles = Article::getAllArticles($conn, $_SESSION['login_id']);
+// var_dump($articles);
 ?>
-<h1>TEST 6</h1>
+<h1>TEST 2</h1>
 
 <?php require 'includes/header.php'; ?>
 <a href="new_article.php">New article</a>

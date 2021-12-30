@@ -76,10 +76,22 @@ class User
         return $errors;
     }
 
-    public static function login(){
+    public static function login($conn, $username){
         session_regenerate_id(true);
-
         $_SESSION['is_logged_in'] = true;
+
+        $sql = "SELECT *
+                FROM user
+                WHERE username = :username";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(":username", $username, PDO::PARAM_STR);
+
+        $stmt->setFetchMode(PDO::FETCH_CLASS, 'User');
+        $stmt->execute();
+        $user = $stmt->fetch();
+
+        $_SESSION['login_id'] = $user->id;
     }
 
     public static function logout(){
