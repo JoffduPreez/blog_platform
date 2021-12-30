@@ -15,7 +15,7 @@ class Database
     public static function getConnection()
     {
         $db_host = "localhost";
-        $db_name = "cms";
+        $db_name = "blog_platform";
         $db_user = "joffre";
         $db_pass = "joffre$$";
         $dsn = 'mysql:host=' . $db_host . ';dbname=' . $db_name . ';charset=utf8';

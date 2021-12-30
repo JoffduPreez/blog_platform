@@ -3,7 +3,14 @@ require 'classes/Article.php';
 require 'classes/Database.php';
 
 $conn = Database::getConnection();
-$article = Article::getArticleByID($conn, $_GET['id']);
+if (isset($_GET['id'])) {
+    $article = Article::getArticleByID($conn, $_GET['id']);
+    $title = $article->title;
+    $content = $article->content;
+    $published_at = $article->published_at;
+} else {
+    $article = null;
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_GET['id'];
@@ -12,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $published_at = $_POST['published_at'];
 
     $conn = Database::getConnection();
-    Article::editArticle($conn, $title, $content, $published_at, $id);
+    $errors = Article::editArticle($conn, $title, $content, $published_at, $id);
 }
 ?>
 

@@ -11,7 +11,9 @@ $articles = Article::getAllArticles($conn, $_SESSION['login_id']);
 <h1>TEST 2</h1>
 
 <?php require 'includes/header.php'; ?>
+
 <a href="new_article.php">New article</a>
+
 <?php if (empty($articles)): ?>
     <p>No articles found.</p>
 <?php else: ?>

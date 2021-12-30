@@ -3,7 +3,11 @@ require 'classes/Article.php';
 require 'classes/Database.php';
 
 $conn = Database::getConnection();
-$article = Article::getArticleByID($conn, $_GET['id']);
+if (isset($_GET['id'])) {
+    $article = Article::getArticleByID($conn, $_GET['id']);
+} else {
+    $article = null;
+}
 ?>
 
 <?php require 'includes/header.php'; ?>
@@ -14,8 +18,8 @@ $article = Article::getArticleByID($conn, $_GET['id']);
         <p><?= htmlspecialchars($article->content); ?></p>
     </article>
 
-    <a href="edit-article.php?id=<?= $article->id; ?>">Edit</a>
-    <a href="delete-article.php?id=<?= $article->id; ?>">Delete</a>
+    <a href="edit_article.php?id=<?= $article->id; ?>">Edit</a>
+    <a href="delete_article.php?id=<?= $article->id; ?>">Delete</a>
 
 <?php else : ?>
     <p>Article not found.</p>
