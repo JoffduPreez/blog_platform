@@ -5,36 +5,39 @@ require 'classes/Database.php';
 session_start();
 
 $conn = Database::getConnection();
-$articles = Article::getAllArticles($conn, $_SESSION['login_id']); // change this
-$following = User::getFollowing($conn, $_SESSION['login_id']);
-
-
+$articles = Article::getAllArticles($conn, $_GET['id']);
+$following = User::getFollowing($conn, $_SESSION['login_id']); 
+$currentUser = User::getCurrentUser($conn, $_GET['id']);
 // var_dump($articles);
 ?>
 
 <?php require 'includes/header.php' ?>
         <div id="main-container">
-            <div id="new-post-container">
-                <form action="new_article.php" method="post" id="new-article">
-                    <input name="title" type="text" placeholder="Title" id="new-article-title">
-                    <textarea name="content" placeholder="Content" id="new-article-body"></textarea>
-                    <label for="new-article-date" id="publication-label">Publication date and time</label>
-                    <input type="datetime-local" name="published_at" id="new-article-date">
-                </form>
+            <div id="profile-container">
+                <div id="profile-body">
+                    <div class="user">
+                        <div class="pfp"></div>
+                        <p><?= $currentUser[0]['username']; ?></p>
+                    </div>
+                    <?php if ($currentUser[0]['bio']) : ?>
+                        <p><?= $currentUser[0]['bio']; ?></p>
+                    <?php else : ?>
+                        <p>This user has no bio</p>
+                    <?php endif; ?>
+                </div>
                 <div id="submit-container">
-                    <button type="submit" form="new-article" class="article-button">Publish</button>
+                    <a href="edit_profile.php?id=<?= $_GET['id']; ?>" class="article-button">Edit profile</a>
                 </div>
             </div>
 
             <?php if (empty($articles)): ?>
-                <p>No articles found.</p>
+                <p>This user has no articles</p>
             <?php else: ?>
                 <?php foreach ($articles as $article): ?>
-                    <?php $currentUser = User::getCurrentUser($conn, $article['user_id']); ?>
                     <div class="post">
                         <div class="pfp"></div>
                         <div class="post-body">
-                            <a href="profile.php?id=<?= $currentUser[0]['id']; ?>" class="username"><?= htmlspecialchars($currentUser[0]['username']); ?></a>
+                            <h3 class="username">Username</h3>
                             <a href="article.php?id=<?= $article['id']; ?>" class="article-title"><?= htmlspecialchars($article['title']); ?></a>
                         </div>
                     </div>

@@ -19,6 +19,22 @@ class Article
         }
     }
 
+    public static function getUsersArticles($conn, $id){
+        $sql = "SELECT *
+                FROM articles
+                WHERE user_id = :id";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+    
+        // $stmt->setFetchMode(PDO::FETCH_CLASS, 'Article');
+    
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // return $stmt->fetch();
+        }
+    }
+
     public static function getArticleByID($conn, $id){
         $sql = "SELECT *
                 FROM articles
@@ -107,19 +123,6 @@ class Article
         }
         if ($content == '') {
             array_push($errors, 'Content is required');
-        }
-        if ($published_at != '') {
-            $date_time = date_create_from_format('Y-m-d H:i:s', $published_at);
-
-            if ($date_time === false) {
-                array_push($errors, 'Invalid date and time');
-            } else {
-                $date_errors = date_get_last_errors();
-
-                if ($date_errors['warning_count'] > 0) {
-                    array_push($errors, 'Invalid date and time');
-                }
-            }
         }
 
         return $errors;

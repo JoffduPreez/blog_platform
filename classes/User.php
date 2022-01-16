@@ -26,16 +26,14 @@ class User
         $errors = User::validateForm($conn, $username, $password, $password2);
 
         if (empty($errors)){
-            $sql = "INSERT INTO user (username, password, article_id) 
-            VALUES (:username, :password, :article_id)";
+            $sql = "INSERT INTO user (username, password) 
+            VALUES (:username, :password)";
 
             $stmt = $conn->prepare($sql);
             $stmt->bindValue(':username', $username, PDO::PARAM_STR);
             $stmt->bindValue(':password', $password, PDO::PARAM_STR);
-            $stmt->bindValue(':article_id', NULL, PDO::PARAM_NULL);
 
             $stmt->execute();
-
         } else {
             return $errors;
         }
@@ -112,5 +110,101 @@ class User
         }
 
         session_destroy();
+    }
+
+    public static function getAllUsers($conn, $currentUserId){
+        $sql = "SELECT *
+                FROM user
+                WHERE NOT (id = " . $currentUserId . ")";
+
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // return $stmt->fetch();
+        }
+    }
+
+    public static function getCurrentUser($conn, $currentUserId){
+        $sql = "SELECT *
+                FROM user
+                WHERE id = :currentUserId";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(':currentUserId', $currentUserId, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    public static function followUser($conn, $currentUser, $newFollowId){
+        $sql = "INSERT INTO user_relationships (follower, following) 
+                VALUES (:currentUser, :newFollowId)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(':currentUser', $currentUser, PDO::PARAM_INT);
+        $stmt->bindValue(':newFollowId', $newFollowId, PDO::PARAM_INT);
+
+        $stmt->execute();
+    }
+
+    public static function unfollowUser($conn, $currentUser, $followId){
+        $sql = "DELETE FROM user_relationships
+                WHERE (follower = :currentUser AND following = :followId)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(':currentUser', $currentUser, PDO::PARAM_INT);
+        $stmt->bindValue(':followId', $followId, PDO::PARAM_INT);
+
+        $stmt->execute();
+    }
+
+    public static function checkFollow($conn, $currentUser, $otherUserId){
+        $sql = "SELECT *
+                FROM user_relationships
+                WHERE (follower = ".$currentUser." AND following = ".$otherUserId.")";
+
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt->execute()) {
+            $userRelationship = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if ($userRelationship == NULL) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static function getFollowing($conn, $currentUser){
+        $sql = "SELECT *
+                FROM user_relationships
+                WHERE (follower = ".$currentUser.")";
+
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt->execute()) {
+            $following = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        $sql = "SELECT *
+                FROM user
+                WHERE (";
+
+        for ($i = 0; $i < count($following); $i++) {
+            if ($i == count($following) - 1) {
+                $sql .= "id = " . $following[$i]['following'] . ")";
+            } else {
+                $sql .= "id = " . $following[$i]['following'] . " OR ";
+            }
+        }
+
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
 }
